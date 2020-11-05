@@ -167,7 +167,7 @@ sed -i '10s/.//' /usr/local/etc/radiusclient/servers
 #### add option.xl2tpd ####
 sed -i '$a plugin /usr/lib64/pppd/2.4.7/radius.so' /etc/ppp/options.xl2tpd
 sed -i '$a plugin /usr/lib64/pppd/2.4.7/radattr.so' /etc/ppp/options.xl2tpd
-sed -i '$a radius-config-file /usr/local/etc/radiusdclient/radiusclient.conf' /etc/ppp/options.xl2tpd
+sed -i '$a radius-config-file /usr/local/etc/radiusclient/radiusclient.conf' /etc/ppp/options.xl2tpd
 
 ####
 systemctl start xl2tpd ipsec mysqld && systemctl enable xl2tpd ipsec mysqld
