@@ -14,7 +14,7 @@ setenforce 0
 
 #### Synchronization time ####
 sed -i '3s/pool/#pool/' /etc/chrony.conf
-sed -i '3 a server ntp.aliyun.com iburst' /etc/chrony.conf
+sed -i '3a server ntp.aliyun.com iburst' /etc/chrony.conf
 systemctl restart chronyd
 
 #### Install L2tp ####
@@ -80,9 +80,6 @@ nodefaultroute
 debug
 proxyarp
 logfile /var/log/xl2tpd.log
-#plugin /usr/lib/pppd/2.4.7/radius.so
-#plugin /usr/lib/pppd/2.4.7/radattr.so
-#radius-config-file /usr/local/etc/radiusclient/radiusclient.conf
 EOF
 
 #### Specify IPsec PSK ####
@@ -114,8 +111,6 @@ EOF
 #### Open firewalld ####
 firewall-cmd --permanent --add-service=ipsec
 firewall-cmd --permanent --add-port=1701/udp
-#firewall-cmd --permanent --add-port=1723/tcp
-#firewall-cmd --permanent --direct --add-rule ipv4 filter INPUT 0 -i $VPN_NETWORK_INTERFACE -p gre -j ACCEPT
 firewall-cmd --permanent --add-masquerade
 firewall-cmd --reload
 
