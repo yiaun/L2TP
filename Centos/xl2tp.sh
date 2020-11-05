@@ -1,3 +1,10 @@
+#### Configure your setting ####
+read -p "VPN_DNS1": VPN_DNS1
+read -p "VPN_DNS2": VPN_DNS2
+read -p "IPSEC_PSK": IPSEC_PSK
+VPN_NETWORK_INTERFACE=`ip -4 route | awk 'NR==1 {print $5}'`
+
+
 #### Prepare tools ####
 yum -y install vim lrzsz bash-completion net-tools wget gcc make epel-release
 sed -i '7s/enforcing/disabled/' /etc/sysconfig/selinux
@@ -76,7 +83,7 @@ EOF
 
 #### Specify IPsec PSK ####
 cat > /etc/ipsec.d/ipsec.secrets << EOF
- : PSK "$VPN_IPSEC_PSK"
+ : PSK "$IPSEC_PSK"
 EOF
 
 #### Update sysctl settings ####
