@@ -8,7 +8,7 @@ VPN_NETWORK_INTERFACE=`ip -4 route | awk 'NR==1 {print $5}'`
 
 
 #### Prepare tools ####
-yum -y install vim lrzsz bash-completion net-tools wget gcc make epel-release
+yum -y install vim lrzsz bash-completion net-tools wget gcc make git epel-release
 sed -i '7s/enforcing/disabled/' /etc/sysconfig/selinux
 setenforce 0
 
@@ -122,4 +122,18 @@ firewall-cmd --reload
 #### Open server ####
 systemctl start xl2tpd ipsec && systemctl enable xl2tpd ipsec
 sysctl -p
-reboot
+
+#### Install mysql ####
+yum -y install mysql mysql-server
+
+### install Freeradius ####
+yum -y install freeradius freeradius-utils freeradius-mysql
+cd ~
+wget -c ftp://ftp.freeradius.org/pub/freeradius/freeradius-client-1.1.7.tar.gz 
+tar -zxvf freeradius-client-1.1.7.tar.gz
+cd freeradius-client-1.1.7
+./configure
+make && make install
+
+
+
