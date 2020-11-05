@@ -80,9 +80,6 @@ nodefaultroute
 debug
 proxyarp
 logfile /var/log/xl2tpd.log
-#plugin /usr/lib/pppd/2.4.7/radius.so
-#plugin /usr/lib/pppd/2.4.7/radattr.so
-#radius-config-file /usr/local/etc/radiusclient/radiusclient.conf
 EOF
 
 #### Specify IPsec PSK ####
@@ -112,20 +109,18 @@ net.ipv4.conf.lo.accept_redirects = 0
 EOF
 
 #### Open firewalld ####
+sysctl -p
 firewall-cmd --permanent --add-service=ipsec
 firewall-cmd --permanent --add-port=1701/udp
-#firewall-cmd --permanent --add-port=1723/tcp
-#firewall-cmd --permanent --direct --add-rule ipv4 filter INPUT 0 -i $VPN_NETWORK_INTERFACE -p gre -j ACCEPT
 firewall-cmd --permanent --add-masquerade
 firewall-cmd --reload
 
-#### Open server ####
-systemctl start xl2tpd ipsec && systemctl enable xl2tpd ipsec
-sysctl -p
 
 #### Install mysql ####
 yum -y install mysql mysql-server
+systemctl start mysqld && systemctl enabled mysqld
 mysql -e "create database radius;"
+mysql -uroot -p -Dradius </etc/raddb/mods-config/sql/main/mysql/schema.sql
 mysql -e "create user 'radius'@'localhost' identified by 'password';"
 mysql -e "alter user 'radius'@'localhost' identified with mysql_native_password by 'password';"
 mysql -e "grant all privileges on radius.* to 'radius'@'localhost';"
@@ -146,16 +141,37 @@ sed -i '31s/null/mysql/' /etc/raddb/mods-available/sql
 sed -i '87s/sqlite/mysql/' /etc/raddb/mods-available/sql
 sed -i '91,94s/.//' /etc/raddb/mods-available/sql
 sed -i '245s/.//' /etc/raddb/mods-available/sql
-
 cd /etc/raddb/mods-enabled/
 ln -s ../mods-available/sql
 chown -Rf root:radiusd /etc/raddb/mods-enabled/sql
 
-
+cd /etc/raddb/sites-available/
 sed -i '405s/-sql/sql/' /etc/raddb/sites-available/default
 sed -i '640s/-sql/sql/' /etc/raddb/sites-available/default
 sed -i '732s/-sql/sql/' /etc/raddb/sites-available/default
 sed -i '682s/.//' /etc/raddb/sites-available/default
+
+
+#### Configure freeradius-client ####
+sed -i '/ipv6/s/^/#/' /usr/local/etc/radiusclient/dictionary
+sed -i '$a INCLUDE /usr/local/etc/radiusclient/dictionary.sip' /usr/local/etc/radiusclient/dictionary
+sed -i '$a INCLUDE /usr/local/etc/radiusclient/dictionary.ascend' /usr/local/etc/radiusclient/dictionary
+sed -i '$a INCLUDE /usr/local/etc/radiusclient/dictionary.merit' /usr/local/etc/radiusclient/dictionary
+sed -i '$a INCLUDE /usr/local/etc/radiusclient/dictionary.compat' /usr/local/etc/radiusclient/dictionary
+sed -i '$a INCLUDE /usr/local/etc/radiusclient/dictionary.microsoft' /usr/local/etc/radiusclient/dictionary
+sed -i '83s/^/#/g' /usr/local/etc/radiusclient/radiusclient.conf
+sed -i '10s/.//' /usr/local/etc/radiusclient/servers
+
+#### add option.xl2tpd ####
+sed -i '$a plugin /usr/lib64/pppd/2.4.7/radius.so' /etc/ppp/options.xl2tpd
+sed -i '$a plugin /usr/lib64/pppd/2.4.7/radattr.so' /etc/ppp/options.xl2tpd
+sed -i '$a radius-config-file /usr/local/etc/radiusdclient/radiusclient.conf' /etc/ppp/options.xl2tpd
+
+####
+systemctl start xl2tpd ipsec mysqld && systemctl enable xl2tpd ipsec mysqld
+systemctl start radiusd && systemcl enabled radiusd
+
+
 
 
 
