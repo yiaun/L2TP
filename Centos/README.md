@@ -1,3 +1,5 @@
+目前以Centos 8搭建
+
 #### V1版本只安装l2tp ####
 xl2tpd-v1.sh only install xl2tpd
 
