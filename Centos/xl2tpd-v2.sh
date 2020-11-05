@@ -121,9 +121,9 @@ firewall-cmd --reload
 yum -y install mysql mysql-server mysql-devel
 systemctl start mysqld && systemctl enabled mysqld
 mysql -e "create database radius;"
-mysql -uroot -ppassword -Dradius </etc/raddb/mods-config/sql/main/mysql/schema.sql
-mysql -e "create user 'radius'@'localhost' identified by 'password';"
-mysql -e "alter user 'radius'@'localhost' identified with mysql_native_password by 'password';"
+mysql -uradius -pradpass -Dradius </etc/raddb/mods-config/sql/main/mysql/schema.sql
+mysql -e "create user 'radius'@'localhost' identified by 'radpass';"
+mysql -e "alter user 'radius'@'localhost' identified with mysql_native_password by 'radpass';"
 mysql -e "grant all privileges on radius.* to 'radius'@'localhost';"
 mysql -e "flush privileges;"
 
@@ -170,10 +170,14 @@ sed -i '$a plugin /usr/lib64/pppd/2.4.7/radattr.so' /etc/ppp/options.xl2tpd
 sed -i '$a radius-config-file /usr/local/etc/radiusclient/radiusclient.conf' /etc/ppp/options.xl2tpd
 
 ####
-systemctl start xl2tpd ipsec mysqld && systemctl enable xl2tpd ipsec mysqld
-systemctl start radiusd && systemcl enabled radiusd
-
-
+systemctl enable mysqld ipsec xl2tpd radiusd
+cat > /root/l2tprestart.sh << EOF
+systemctl restart mysqld ipsec xl2tpd
+systemctl restart radiusd
+/bin/echo $(/bin/date +%F_%T) >> /tmp/l2tprestart.log
+EOF
+chmod u+x /root/l2tprestart.sh
+sed -i '14a /bin/bash /root/l2tprestart.sh >/dev/null 2>/dev/null' /etc/rc.local
 
 
 
