@@ -170,13 +170,15 @@ sed -i '$a plugin /usr/lib64/pppd/2.4.7/radattr.so' /etc/ppp/options.xl2tpd
 sed -i '$a radius-config-file /usr/local/etc/radiusclient/radiusclient.conf' /etc/ppp/options.xl2tpd
 
 ####
-systemctl enable mysqld ipsec xl2tpd && systemctl diasbled radiusd
+systemctl disabled mysqld ipsec xl2tpd radiusd
 cat > /root/l2tprestart.sh << EOF
 systemctl restart mysqld ipsec xl2tpd
 systemctl restart radiusd
 /bin/echo $(/bin/date +%F_%T) >> /tmp/l2tprestart.log
 EOF
-chmod u+x /root/l2tprestart.sh
+chmod +x /root/l2tprestart.sh
+chmod +x /etc/rc.d/rc.local
+sed -i '14a /bin/bash /root/l2tprestart.sh' /etc/rc.d/rc.local
 
 
 
