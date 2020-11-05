@@ -83,8 +83,9 @@ logfile /var/log/xl2tpd.log
 EOF
 
 #### Specify IPsec PSK ####
+PUBLIC_IP=`curl ip.sb`
 cat > /etc/ipsec.d/ipsec.secrets << EOF
- : PSK "$IPSEC_PSK"
+$PUBLIC_IP %any : PSK "$IPSEC_PSK"
 EOF
 
 #### Update sysctl settings ####
