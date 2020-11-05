@@ -118,7 +118,7 @@ firewall-cmd --reload
 
 
 #### Install mysql ####
-yum -y install mysql mysql-server
+yum -y install mysql mysql-server mysql-devel
 systemctl start mysqld && systemctl enabled mysqld
 mysql -e "create database radius;"
 mysql -uroot -ppassword -Dradius </etc/raddb/mods-config/sql/main/mysql/schema.sql
