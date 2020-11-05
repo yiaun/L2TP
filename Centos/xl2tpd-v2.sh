@@ -120,7 +120,7 @@ firewall-cmd --reload
 yum -y install mysql mysql-server
 systemctl start mysqld && systemctl enabled mysqld
 mysql -e "create database radius;"
-mysql -uroot -p -Dradius </etc/raddb/mods-config/sql/main/mysql/schema.sql
+mysql -uroot -ppassword -Dradius </etc/raddb/mods-config/sql/main/mysql/schema.sql
 mysql -e "create user 'radius'@'localhost' identified by 'password';"
 mysql -e "alter user 'radius'@'localhost' identified with mysql_native_password by 'password';"
 mysql -e "grant all privileges on radius.* to 'radius'@'localhost';"
