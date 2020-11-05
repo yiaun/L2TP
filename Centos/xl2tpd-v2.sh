@@ -154,6 +154,7 @@ sed -i '682s/.//' /etc/raddb/sites-available/default
 
 #### Configure freeradius-client ####
 sed -i '/ipv6/s/^/#/' /usr/local/etc/radiusclient/dictionary
+cp /root/L2TP/dictionary.microsoft /usr/local/etc/radiusclient/
 sed -i '$a INCLUDE /usr/local/etc/radiusclient/dictionary.sip' /usr/local/etc/radiusclient/dictionary
 sed -i '$a INCLUDE /usr/local/etc/radiusclient/dictionary.ascend' /usr/local/etc/radiusclient/dictionary
 sed -i '$a INCLUDE /usr/local/etc/radiusclient/dictionary.merit' /usr/local/etc/radiusclient/dictionary
