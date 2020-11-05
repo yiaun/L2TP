@@ -174,7 +174,7 @@ systemctl disabled mysqld ipsec xl2tpd radiusd
 cat > /root/l2tprestart.sh << EOF
 systemctl restart mysqld ipsec xl2tpd
 systemctl restart radiusd
-/bin/echo $(/bin/date +%F_%T) >> /tmp/l2tprestart.log
+/bin/echo $(/bin/date +%F-%T) >> /tmp/l2tprestart.log
 EOF
 chmod +x /root/l2tprestart.sh
 chmod +x /etc/rc.d/rc.local
