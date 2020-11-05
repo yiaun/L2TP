@@ -125,8 +125,13 @@ sysctl -p
 
 #### Install mysql ####
 yum -y install mysql mysql-server
+mysql -e "create database radius;"
+mysql -e "create user 'radius'@'localhost' identified by 'password';"
+mysql -e "alter user 'radius'@'localhost' identified with mysql_native_password by 'password';"
+mysql -e "grant all privileges on radius.* to 'radius'@'localhost';"
+mysql -e "flush privileges;"
 
-### install Freeradius ####
+#### install Freeradius ####
 yum -y install freeradius freeradius-utils freeradius-mysql
 cd ~
 wget -c ftp://ftp.freeradius.org/pub/freeradius/freeradius-client-1.1.7.tar.gz 
@@ -134,6 +139,31 @@ tar -zxvf freeradius-client-1.1.7.tar.gz
 cd freeradius-client-1.1.7
 ./configure
 make && make install
+
+#### Configure freeradius ####
+cp -arp /etc/raddb/modsavailable/sql /etc/raddb/mods-available/sql.bak
+sed -i '31s/null/mysql/' /etc/raddb/mods-available/sql
+sed -i '87s/sqlite/mysql/' /etc/raddb/mods-available/sql
+sed -i '91,94s/.//' /etc/raddb/mods-available/sql
+sed -i '245s/.//' /etc/raddb/mods-available/sql
+
+cd /etc/raddb/mods-enabled/
+ln -s ../mods-available/sql
+chown -Rf root:radiusd /etc/raddb/mods-enabled/sql
+
+
+sed -i '405s/-sql/sql/' /etc/raddb/sites-available/default
+sed -i '640s/-sql/sql/' /etc/raddb/sites-available/default
+sed -i '732s/-sql/sql/' /etc/raddb/sites-available/default
+sed -i '682s/.//' /etc/raddb/sites-available/default
+
+
+
+
+
+
+
+
 
 
 
