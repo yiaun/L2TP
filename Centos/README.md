@@ -7,4 +7,4 @@ xl2tpd-v1.sh only install xl2tpd
 xl2tpd-v2.sh install xl2tpd mysql freeradius
 
 #### V3版本添加了daloradius的Web管理 ####
-xl2tpd-vs.sh add Daloradius
+xl2tpd-vs.sh add Daloradius pptpd
