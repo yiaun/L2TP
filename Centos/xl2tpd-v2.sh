@@ -21,7 +21,11 @@ systemctl restart chronyd
 yum -y install xl2tpd libreswan lsof 
 
 #### Create IPsec (Libreswan) config ####
-mv /etc/ipsec.conf /etc/ipsec.conf.bak
+if [ ! -f "/etc/ipsec.conf.bak" ];then
+	mv /etc/ipsec.conf /etc/ipsec.conf.bak
+else
+	rm -rf /etc/ipsec.conf
+fi
 cat > /etc/ipsec.conf <<EOF
 config setup
 	uniqueids=no
@@ -48,7 +52,11 @@ conn ikev1-nat
 EOF
 
 #### Create xl2tpd config ####
-mv /etc/xl2tpd/xl2tpd.conf /etc/xl2tpd/xl2tpd.conf.bak
+if [ ! -f "/etc/xl2tpd/xl2tpd.conf" ];then
+	mv /etc/xl2tpd/xl2tpd.conf /etc/xl2tpd/xl2tpd.conf.bak
+else
+	rm -rf /etc/xl2tpd/xl2tpd.conf
+fi
 cat > /etc/xl2tpd/xl2tpd.conf <<EOF
 [global]
 port = 1701
@@ -64,6 +72,11 @@ length bit = yes
 EOF
 
 #### Set xl2tpd options ####
+if [ ! -f "/etc/ppp/options.xl2tpd" ];then
+	echo "options.xl2tpd does not exist"
+else
+	mv /etc/ppp/options.xl2tpd /etc/ppp/options.xl2tpd.bak
+fi
 cat > /etc/ppp/options.xl2tpd <<EOF
 ipcp-accept-local
 ipcp-accept-remote
