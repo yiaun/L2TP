@@ -292,7 +292,7 @@ else
 	cp -arp /var/www/html/daloradius-users/library/daloradius.conf.php.bak /var/www/html/daloradius-users/library/daloradius.conf.php
 fi
 sed -i '31s/root/radius/' /var/www/html/daloradius-users/library/daloradius.conf.php
-sed -i sed -i "32s/''/'radpass'/" /var/www/html/daloradius-users/library/daloradius.conf.php
+sed -i "32s/''/'radpass'/" /var/www/html/daloradius-users/library/daloradius.conf.php
 chmod 644 /var/www/html/daloradius-users/library/daloradius.conf.php
 
 #### reboot ####
