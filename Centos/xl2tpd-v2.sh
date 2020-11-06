@@ -250,7 +250,7 @@ fi
 sed -i '10s/.//' /usr/local/etc/radiusclient/servers
 
 #### systemcl disable ####
-systemctl disabled mysqld ipsec xl2tpd radiusd
+systemctl disable mysqld ipsec xl2tpd radiusd
 if [ ! -f "/root/l2tprestart.sh" ];then
 	echo l2tprestart.sh does not exist
 else
