@@ -167,7 +167,7 @@ sed -i '$a INCLUDE /usr/local/etc/radiusclient/dictionary.microsoft' /usr/local/
 sed -i '83s/^/#/g' /usr/local/etc/radiusclient/radiusclient.conf
 sed -i '10s/.//' /usr/local/etc/radiusclient/servers
 
-####
+#### systemcl disable ####
 systemctl disabled mysqld ipsec xl2tpd radiusd
 cat > /root/l2tprestart.sh << EOF
 systemctl restart mysqld ipsec xl2tpd
@@ -178,6 +178,8 @@ chmod +x /root/l2tprestart.sh
 chmod +x /etc/rc.d/rc.local
 sed -i '14a /bin/bash /root/l2tprestart.sh' /etc/rc.d/rc.local
 
+#### reboot ####
+reboot
 
 
 
