@@ -14,7 +14,7 @@ setenforce 0
 
 #### Synchronization time ####
 sed -i '3s/pool/#pool/' /etc/chrony.conf
-sed -i '3 a server ntp.aliyun.com iburst' /etc/chrony.conf
+sed -i '3a server ntp.aliyun.com iburst' /etc/chrony.conf
 systemctl restart chronyd
 
 #### Install L2tp ####
