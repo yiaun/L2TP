@@ -21,6 +21,8 @@ systemctl restart chronyd
 yum -y install xl2tpd libreswan lsof 
 
 #### Create IPsec (Libreswan) config ####
+
+#### /etc/ipsec.conf ####
 if [ ! -f "/etc/ipsec.conf.bak" ];then
 	mv /etc/ipsec.conf /etc/ipsec.conf.bak
 else
@@ -52,6 +54,8 @@ conn ikev1-nat
 EOF
 
 #### Create xl2tpd config ####
+
+#### /etc/xl2tpd/xl2tpd.conf ####
 if [ ! -f "/etc/xl2tpd/xl2tpd.conf.bak" ];then
 	mv /etc/xl2tpd/xl2tpd.conf /etc/xl2tpd/xl2tpd.conf.bak
 else
@@ -72,6 +76,8 @@ length bit = yes
 EOF
 
 #### Set xl2tpd options ####
+
+#### /etc/ppp/options.xl2tpd ####
 if [ ! -f "/etc/ppp/options.xl2tpd" ];then
 	echo "options.xl2tpd does not exist"
 else
@@ -100,6 +106,8 @@ EOF
 
 #### Specify IPsec PSK ####
 PUBLIC_IP=`curl ip.sb`
+#### /etc/ipsec.d/ipsec.secrets ####
+
 if [ ! -f "/etc/ipsec.d/ipsec.secrets" ];then
 	echo "ipsec.secrets does not exist"
 else
@@ -110,6 +118,8 @@ $PUBLIC_IP %any : PSK "$IPSEC_PSK"
 EOF
 
 #### Update sysctl settings ####
+
+#### /etc/sysctl.conf ####
 if [ ! -f "/etc/sysctl.conf.bak" ];then
 	mv /etc/sysctl.conf /etc/sysctl.conf.bak
 else
@@ -235,15 +245,25 @@ sed -i '10s/.//' /usr/local/etc/radiusclient/servers
 
 #### systemcl disable ####
 systemctl disabled mysqld ipsec xl2tpd radiusd
+if [ ! -f "/root/l2tprestart.sh" ];then
+	echo l2tprestart.sh does not exist
+else
+	rm -rf /root/l2tprestart.sh
+fi
 cat > /root/l2tprestart.sh << EOF
 systemctl restart mysqld ipsec xl2tpd
 systemctl restart radiusd
-/bin/echo $(/bin/date +%F-%T) >> /tmp/l2tprestart.log
+/bin/echo $(/bin/date +%F-%T) >> /var/log/l2tprestart.log
 EOF
 chmod +x /root/l2tprestart.sh
-chmod +x /etc/rc.d/rc.local
+if [ ! -f "/etc/rc.d/rc.local.bak" ];then
+	cp -arp /etc/rc.d/rc.local /etc/rc.d/rc.local.bak
+else
+	rm -rf /etc/rc.d/rc.local
+	cp -arp /etc/rc.d/rc.local.bak /etc/rc.d/rc.local
+fi
 sed -i '14a /bin/bash /root/l2tprestart.sh' /etc/rc.d/rc.local
-
+chmod +x /etc/rc.d/rc.local
 #### reboot ####
 reboot
 
