@@ -13,6 +13,12 @@ sed -i '7s/enforcing/disabled/' /etc/sysconfig/selinux
 setenforce 0
 
 #### Synchronization time ####
+if [ ! -f /etc/chrony.conf.bak ];then
+	cp -arp /etc/chrony.conf /etc/chrony.conf.bak
+else
+	rm -rf /etc/chrony.conf
+	cp -arp /etc/chrony.conf.bak /etc/chrony.conf
+fi
 sed -i '3s/pool/#pool/' /etc/chrony.conf
 sed -i '3a server ntp.aliyun.com iburst' /etc/chrony.conf
 systemctl restart chronyd
