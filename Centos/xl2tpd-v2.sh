@@ -75,7 +75,7 @@ EOF
 if [ ! -f "/etc/ppp/options.xl2tpd" ];then
 	echo "options.xl2tpd does not exist"
 else
-	mv /etc/ppp/options.xl2tpd /etc/ppp/options.xl2tpd.bak
+	rm -rf /etc/ppp/options.xl2tpd
 fi
 cat > /etc/ppp/options.xl2tpd <<EOF
 ipcp-accept-local
@@ -100,11 +100,21 @@ EOF
 
 #### Specify IPsec PSK ####
 PUBLIC_IP=`curl ip.sb`
+if [ ! -f "/etc/ipsec.d/ipsec.secrets" ];then
+	echo "ipsec.secrets does not exist"
+else
+	rm -rf /etc/ipsec.d/ipsec.secrets
+fi
 cat > /etc/ipsec.d/ipsec.secrets << EOF
 $PUBLIC_IP %any : PSK "$IPSEC_PSK"
 EOF
 
 #### Update sysctl settings ####
+if [ ! -f "/etc/sysctl.conf.bak" ];then
+	mv /etc/sysctl.conf /etc/sysctl.conf.bak
+else
+	rm -rf /etc/sysctl.conf
+fi
 mv /etc/sysctl.conf /etc/sysctl.conf.bak
 cat > /etc/sysctl.conf << EOF
 net.ipv4.ip_forward = 1
