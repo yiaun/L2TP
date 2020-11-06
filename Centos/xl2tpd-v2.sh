@@ -159,6 +159,15 @@ firewall-cmd --permanent --add-masquerade
 firewall-cmd --reload
 
 
+#### install Freeradius ####
+yum -y install freeradius freeradius-utils freeradius-mysql
+cd ~
+wget https://github.com/aryayk/L2TP/releases/download/freeradius/freeradius-client-1.1.7.tar.gz
+tar -zxvf freeradius-client-1.1.7.tar.gz
+cd freeradius-client-1.1.7
+./configure
+make && make install
+
 #### Install mysql ####
 yum -y install mysql mysql-server mysql-devel
 systemctl restart mysqld
@@ -168,15 +177,6 @@ mysql -e "alter user 'radius'@'localhost' identified with mysql_native_password 
 mysql -uradius -pradpass -Dradius </etc/raddb/mods-config/sql/main/mysql/schema.sql
 mysql -e "grant all privileges on radius.* to 'radius'@'localhost';"
 mysql -e "flush privileges;"
-
-#### install Freeradius ####
-yum -y install freeradius freeradius-utils freeradius-mysql
-cd ~
-wget https://github.com/aryayk/L2TP/releases/download/freeradius/freeradius-client-1.1.7.tar.gz
-tar -zxvf freeradius-client-1.1.7.tar.gz
-cd freeradius-client-1.1.7
-./configure
-make && make install
 
 #### Configure freeradius ####
 
