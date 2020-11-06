@@ -155,6 +155,7 @@ EOF
 sysctl -p
 firewall-cmd --permanent --add-service=ipsec
 firewall-cmd --permanent --add-port=1701/udp
+firewall-cmd --permanent --add-service=http
 firewall-cmd --permanent --add-masquerade
 firewall-cmd --reload
 
@@ -271,7 +272,31 @@ else
 fi
 sed -i '14a /bin/bash /root/l2tprestart.sh' /etc/rc.d/rc.local
 chmod +x /etc/rc.d/rc.local
+
+#### Install daloradius ####
+yum -y install httpd php php-common php-gd php-mysqli php-pear unzip
+pear install db
+
+#### Download daloradius ####
+cd ~
+wget https://github.com/lirantal/daloradius/archive/master.zip
+unzip master.zip
+cp -arp daloradius-master/* /var/www/html/
+mysql -uradius -pradpass -Dradius < /var/www/html/contrib/db/mysql-daloradius.sql
+
+#### /var/www/html/daloradius-users/library/daloradius.conf.php ####
+if [ ! -f "/var/www/html/daloradius-users/library/daloradius.conf.php.bak" ];then
+	cp -arp /var/www/html/daloradius-users/library/daloradius.conf.php /var/www/html/daloradius-users/library/daloradius.conf.php.bak
+else
+	rm -rf /var/www/html/daloradius-users/library/daloradius.conf.php
+	cp -arp /var/www/html/daloradius-users/library/daloradius.conf.php.bak /var/www/html/daloradius-users/library/daloradius.conf.php
+fi
+sed -i '31s/root/radius/' /var/www/html/daloradius-users/library/daloradius.conf.php
+sed -i '32s/''/vim d'radpass';/' /var/www/html/daloradius-users/library/daloradius.conf.php
+chmod 644 /var/www/html/daloradius-users/library/daloradius.conf.php
+
 #### reboot ####
+firewall-cmd --reload
 reboot
 
 
