@@ -52,7 +52,7 @@ conn ikev1-nat
 EOF
 
 #### Create xl2tpd config ####
-if [ ! -f "/etc/xl2tpd/xl2tpd.conf" ];then
+if [ ! -f "/etc/xl2tpd/xl2tpd.conf.bak" ];then
 	mv /etc/xl2tpd/xl2tpd.conf /etc/xl2tpd/xl2tpd.conf.bak
 else
 	rm -rf /etc/xl2tpd/xl2tpd.conf
