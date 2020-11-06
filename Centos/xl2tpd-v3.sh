@@ -23,8 +23,8 @@ sed -i '3s/pool/#pool/' /etc/chrony.conf
 sed -i '3a server ntp.aliyun.com iburst' /etc/chrony.conf
 systemctl restart chronyd
 
-#### Install L2tp ####
-yum -y install xl2tpd libreswan lsof 
+#### Install L2tp pptp####
+yum -y install xl2tpd pptpd libreswan lsof 
 
 #### Create IPsec (Libreswan) config ####
 
@@ -81,6 +81,19 @@ pppoptfile = /etc/ppp/options.xl2tpd
 length bit = yes
 EOF
 
+#### /etc/pptpd.conf ####
+if [ ! -f "/etc/pptpd.conf.bak" ];then
+	mv /etc/pptpd.conf /etc/pptpd.conf.bak
+else
+	rm -rf /etc/pptpd.conf
+fi
+cat > /etc/pptpd.conf << EOF
+option /etc/ppp/options.pptpd
+logwtmp
+localip=192.168.43.1
+remoteip=192.168.43.20-200
+EOF
+
 #### Set xl2tpd options ####
 
 #### /etc/ppp/options.xl2tpd ####
@@ -109,6 +122,35 @@ plugin /usr/lib64/pppd/2.4.7/radius.so
 plugin /usr/lib64/pppd/2.4.7/radattr.so
 radius-config-file /usr/local/etc/radiusclient/radiusclient.conf
 EOF
+
+#### /etc/ppp/options.pptpd ####
+if [ ! -f "/etc/ppp/options.pptpd.bak" ];then
+	mv /etc/ppp/options.pptpd /etc/ppp/options.pptpd.bak
+else
+	rm -rf /etc/ppp/options.pptpd
+fi
+cat > /etc/ppp/options.pptpd << EOF
+name pptpd
+refuse-pap
+refuse-chap
+refuse-mschap
+require-mschap-v2
+require-mppe-128
+ms-dns $VPN_DNS1
+ms-dns $VPN_DNS2
+proxyarp
+lock
+nobsdcomp
+novj
+novjccomp
+nologfd
+logfile /var/log/pptpd.log
+logfile /var/log/xl2tpd.log
+plugin /usr/lib64/pppd/2.4.7/radius.so
+plugin /usr/lib64/pppd/2.4.7/radattr.so
+radius-config-file /usr/local/etc/radiusclient/radiusclient.conf
+EOF
+
 
 #### Specify IPsec PSK ####
 PUBLIC_IP=`curl ip.sb`
@@ -155,7 +197,9 @@ EOF
 sysctl -p
 firewall-cmd --permanent --add-service=ipsec
 firewall-cmd --permanent --add-port=1701/udp
+firewall-cmd --permanent --add-port=1723/tcp
 firewall-cmd --permanent --add-service=http
+firewall-cmd --permanent --add-service=gre
 firewall-cmd --permanent --add-masquerade
 firewall-cmd --reload
 
