@@ -156,14 +156,21 @@ mysql -e "flush privileges;"
 #### install Freeradius ####
 yum -y install freeradius freeradius-utils freeradius-mysql
 cd ~
-wget -c ftp://ftp.freeradius.org/pub/freeradius/freeradius-client-1.1.7.tar.gz 
+wget https://github.com/aryayk/L2TP/releases/download/freeradius/freeradius-client-1.1.7.tar.gz
 tar -zxvf freeradius-client-1.1.7.tar.gz
 cd freeradius-client-1.1.7
 ./configure
 make && make install
 
 #### Configure freeradius ####
-cp -arp /etc/raddb/modsavailable/sql /etc/raddb/mods-available/sql.bak
+
+#### /etc/raddb/mods-available/sql ####
+if [ ! -f "/etc/raddb/mods-available/sql.bak" ];then
+	cp -arp /etc/raddb/mods-available/sql /etc/raddb/mods-available/sql.bak
+else
+	rm -rf /etc/raddb/mods-available/sql
+	cp -arp /etc/raddb/mods-available/sql.bak /etc/raddb/mods-available/sql
+fi
 sed -i '31s/null/mysql/' /etc/raddb/mods-available/sql
 sed -i '87s/sqlite/mysql/' /etc/raddb/mods-available/sql
 sed -i '91,94s/.//' /etc/raddb/mods-available/sql
@@ -172,7 +179,13 @@ cd /etc/raddb/mods-enabled/
 ln -s ../mods-available/sql
 chown -Rf root:radiusd /etc/raddb/mods-enabled/sql
 
-cd /etc/raddb/sites-available/
+#### /etc/raddb/sites-available/default ####
+if [ ! -f "/etc/raddb/sites-available/default.bak" ];then
+	cp -arp /etc/raddb/sites-available/default /etc/raddb/sites-available/default.bak
+else
+	rm -rf /etc/raddb/sites-available/default
+	cp -arp /etc/raddb/sites-available/default.bak /etc/raddb/sites-available/default
+fi
 sed -i '405s/-sql/sql/' /etc/raddb/sites-available/default
 sed -i '640s/-sql/sql/' /etc/raddb/sites-available/default
 sed -i '732s/-sql/sql/' /etc/raddb/sites-available/default
@@ -180,14 +193,44 @@ sed -i '682s/.//' /etc/raddb/sites-available/default
 
 
 #### Configure freeradius-client ####
+#### /usr/local/etc/radiusclient/dictionary ####
+if [ ! -f "/usr/local/etc/radiusclient/dictionary.bak" ];then
+	cp -arp /usr/local/etc/radiusclient/dictionary /usr/local/etc/radiusclient/dictionary.bak
+else
+	rm -rf /usr/local/etc/radiusclient/dictionary
+	cp -arp /usr/local/etc/radiusclient/dictionary.bak /usr/local/etc/radiusclient/dictionary
+fi
 sed -i '/ipv6/s/^/#/' /usr/local/etc/radiusclient/dictionary
-cp /root/L2TP/dictionary.microsoft /usr/local/etc/radiusclient/
 sed -i '$a INCLUDE /usr/local/etc/radiusclient/dictionary.sip' /usr/local/etc/radiusclient/dictionary
 sed -i '$a INCLUDE /usr/local/etc/radiusclient/dictionary.ascend' /usr/local/etc/radiusclient/dictionary
 sed -i '$a INCLUDE /usr/local/etc/radiusclient/dictionary.merit' /usr/local/etc/radiusclient/dictionary
 sed -i '$a INCLUDE /usr/local/etc/radiusclient/dictionary.compat' /usr/local/etc/radiusclient/dictionary
 sed -i '$a INCLUDE /usr/local/etc/radiusclient/dictionary.microsoft' /usr/local/etc/radiusclient/dictionary
+
+#### dictionary.microsoft ####
+if [ ! -f "/usr/local/etc/radiusclient/dictionary.microsoft" ];then
+	wget -P /usr/local/etc/radiusclient/ https://github.com/aryayk/L2TP/releases/download/dictionary/dictionary.microsoft
+else
+	rm -rf /usr/local/etc/radiusclient/dictionary.microsoft
+	wget -P /usr/local/etc/radiusclient/ https://github.com/aryayk/L2TP/releases/download/dictionary/dictionary.microsoft
+fi
+
+#### /usr/local/etc/radiusclient/radiusclient.conf ####
+if [ ! -f "/usr/local/etc/radiusclient/radiusclient.conf.bak" ];then
+	cp -arp /usr/local/etc/radiusclient/radiusclient.conf /usr/local/etc/radiusclient/radiusclient.conf.bak
+else
+	rm -rf /usr/local/etc/radiusclient/radiusclient.conf
+	cp -arp /usr/local/etc/radiusclient/radiusclient.conf.bak /usr/local/etc/radiusclient/radiusclient.conf
+fi
 sed -i '83s/^/#/g' /usr/local/etc/radiusclient/radiusclient.conf
+
+#### /usr/local/etc/radiusclient/servers ####
+if [ ! -f "/usr/local/etc/radiusclient/servers.bak" ];then
+	cp -arp /usr/local/etc/radiusclient/servers /usr/local/etc/radiusclient/servers.bak
+else
+	rm -rf /usr/local/etc/radiusclient/servers
+	cp -arp /usr/local/etc/radiusclient/servers.bak /usr/local/etc/radiusclient/servers
+fi
 sed -i '10s/.//' /usr/local/etc/radiusclient/servers
 
 #### systemcl disable ####
