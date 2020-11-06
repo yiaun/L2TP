@@ -80,6 +80,9 @@ nodefaultroute
 debug
 proxyarp
 logfile /var/log/xl2tpd.log
+plugin /usr/lib64/pppd/2.4.7/radius.so
+plugin /usr/lib64/pppd/2.4.7/radattr.so
+radius-config-file /usr/local/etc/radiusclient/radiusclient.conf
 EOF
 
 #### Specify IPsec PSK ####
@@ -163,11 +166,6 @@ sed -i '$a INCLUDE /usr/local/etc/radiusclient/dictionary.compat' /usr/local/etc
 sed -i '$a INCLUDE /usr/local/etc/radiusclient/dictionary.microsoft' /usr/local/etc/radiusclient/dictionary
 sed -i '83s/^/#/g' /usr/local/etc/radiusclient/radiusclient.conf
 sed -i '10s/.//' /usr/local/etc/radiusclient/servers
-
-#### add option.xl2tpd ####
-sed -i '$a plugin /usr/lib64/pppd/2.4.7/radius.so' /etc/ppp/options.xl2tpd
-sed -i '$a plugin /usr/lib64/pppd/2.4.7/radattr.so' /etc/ppp/options.xl2tpd
-sed -i '$a radius-config-file /usr/local/etc/radiusclient/radiusclient.conf' /etc/ppp/options.xl2tpd
 
 ####
 systemctl disabled mysqld ipsec xl2tpd radiusd
