@@ -173,7 +173,6 @@ if [ ! -f "/etc/sysctl.conf.bak" ];then
 else
 	rm -rf /etc/sysctl.conf
 fi
-mv /etc/sysctl.conf /etc/sysctl.conf.bak
 cat > /etc/sysctl.conf << EOF
 net.ipv4.ip_forward = 1
 net.ipv4.conf.all.rp_filter = 0
