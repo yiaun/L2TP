@@ -304,7 +304,8 @@ fi
 cat > /root/l2tprestart.sh << EOF
 systemctl restart mysqld ipsec xl2tpd httpd
 systemctl restart radiusd
-/bin/echo $(/bin/date +%F-%T) >> /var/log/l2tprestart.log
+time=`/bin/date +%F-%T`
+/bin/echo $time >> /var/log/l2tprestart.log
 EOF
 chmod +x /root/l2tprestart.sh
 if [ ! -f "/etc/rc.d/rc.local.bak" ];then
