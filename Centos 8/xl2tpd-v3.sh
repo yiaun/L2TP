@@ -302,6 +302,7 @@ else
 	rm -rf /root/l2tprestart.sh
 fi
 cat > /root/l2tprestart.sh << EOF
+#!/bin/bash
 systemctl restart mysqld ipsec xl2tpd httpd
 systemctl restart radiusd
 EOF
