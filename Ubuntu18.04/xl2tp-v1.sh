@@ -17,9 +17,9 @@ tzselect << EOF
 1
 EOF
 if [ ! -f /etc/localtime ];then
-	rm -rf /etc/localtime
 	ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 else
+	rm -rf /etc/localtime
 	ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 fi
 
